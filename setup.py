@@ -18,11 +18,10 @@ def get_version():
             return version
     raise RuntimeError("Unable to find version string in %s" % version_file)
 
-name = "twitter-dl"
-git_repo = "https://github.com/stockbsd/{}".format(name)
+git_repo = "https://github.com/stockbsd/twitter-media-dl"
 
 setup(
-    name=name,
+    name="twitter-dl",  #distribution name
     version=get_version(),
     description="Download tweet images and videos",
     long_description=Readme,
@@ -37,7 +36,7 @@ setup(
     url=git_repo,
     author="stockbsd",
     author_email="stockbsd@gmail.com",
-    keywords="twitter",
+    keywords="twitter, asyncio, media",
     project_urls={"Bug Reports": git_repo, "Source": git_repo},
     classifiers=[
         "Programming Language :: Python :: 3",

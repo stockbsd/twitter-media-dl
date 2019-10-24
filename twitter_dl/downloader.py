@@ -6,7 +6,6 @@ import json
 
 import requests
 
-from .exceptions import *
 from .threaded_aio_dlder import AioDownloader
 
 
@@ -50,7 +49,7 @@ class Downloader:
         if r.status_code == 200:
             return r.json()["access_token"]
         else:
-            raise BearerTokenNotFetchedError()
+            raise RuntimeError("Bearer TokenNot Fetched")
 
     def download_media_of_tweet(self, tid, save_dest, size="large", include_video=False, 
             include_photo=True):

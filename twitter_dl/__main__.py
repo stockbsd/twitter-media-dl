@@ -1,11 +1,9 @@
 import os
 import argparse
 import json
-import re
 import logging
 
 from . import Downloader
-from .exceptions import *
 
 
 def main():
@@ -36,13 +34,13 @@ def main():
     )
     parser.add_argument(
         "--tweet",
-        help="indicate you gived a tweet url or tweet id",
+        help="indicate you gived a tweet id",
         default=False,
         action="store_true",
     )
     parser.add_argument(
         "--list",
-        help="indicate you gived a list by user:list",
+        help="indicate you gived a list by user:slug",
         default=False,
         action="store_true",
     )
@@ -76,11 +74,11 @@ def main():
         with open(args.confidential) as f:
             confidential = json.loads(f.read())
         if "consumer_key" not in confidential or "consumer_secret" not in confidential:
-            raise ConfidentialsNotSuppliedError()
+            raise RuntimeError("Confidentials Not Supplied")
         api_key = confidential["consumer_key"]
         api_secret = confidential["consumer_secret"]
     else:
-        raise ConfidentialsNotSuppliedError(args.confidential)
+        raise RuntimeError("Confidentials Not Supplied")
 
     downloader = Downloader(api_key, api_secret, args.thread_number, args.coro_number)
 
