@@ -45,6 +45,12 @@ def main():
         action="store_true",
     )
     parser.add_argument(
+        "--file",
+        help="indicate you gived a username file",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--video", help="include video", default=False, action="store_true"
     )
     parser.add_argument(
@@ -73,14 +79,16 @@ def main():
     if args.confidential:
         with open(args.confidential) as f:
             confidential = json.loads(f.read())
-        if "consumer_key" not in confidential or "consumer_secret" not in confidential:
+        
+        bearer_token = confidential.get("bearer_token")
+        api_key = confidential.get("consumer_key")
+        api_secret = confidential.get("consumer_secret")
+        if not (bearer_token or (api_key and api_secret)):
             raise RuntimeError("Confidentials Not Supplied")
-        api_key = confidential["consumer_key"]
-        api_secret = confidential["consumer_secret"]
     else:
         raise RuntimeError("Confidentials Not Supplied")
 
-    downloader = Downloader(api_key, api_secret, args.thread_number, args.coro_number)
+    downloader = Downloader(api_key, api_secret, bearer_token, args.thread_number, args.coro_number)
 
     if args.tweet:
         downloader.download_media_of_tweet(args.resource_id, args.dest, args.size, args.video, 
@@ -90,7 +98,16 @@ def main():
         username, listname = args.resource_id.split(':')
         downloader.download_media_of_list(username, listname, args.dest, args.size, 
             args.limit, args.rts, args.video, args.photo, args.since)
-        downloader.d.join()        
+        downloader.d.join()      
+    elif args.file:
+        with open(args.resource_id) as f:
+            for line in f:
+                try:
+                    downloader.download_media_of_user(line.strip(), args.dest, args.size, 
+                        args.limit, args.rts, args.video, args.photo, args.since)
+                except Exception as e:
+                    pass
+            downloader.d.join()
     else:
         downloader.download_media_of_user(args.resource_id, args.dest, args.size, 
             args.limit, args.rts, args.video, args.photo, args.since)

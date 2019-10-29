@@ -16,9 +16,12 @@ def ensure_dir(directory):
     return directory
 
 class Downloader:
-    def __init__(self, api_key, api_secret, thread_number=2, coro_number=5):
+    def __init__(self, api_key, api_secret, bearer_token=None, thread_number=2, coro_number=5):
         self.log = logging.getLogger("downloader")
-        self.bearer_token = self.bearer(api_key, api_secret)
+        if bearer_token:
+            self.bearer_token = bearer_token
+        else:
+            self.bearer_token = self.bearer(api_key, api_secret)
         self.log.info("Bearer token is " + self.bearer_token)
         self.d = AioDownloader()
         self.d.start(thread_number, coro_number)
@@ -188,6 +191,10 @@ class Downloader:
         if 'retweeted_status' in tweet:
             tweet = tweet['retweeted_status']
             self.log.debug('this is a retweet, turn to orignal tweet')
+        elif ("quoted_status" in tweet):
+            tweet = tweet['quoted_status']
+            self.log.debug('this is a quoted tweet, turn to orignal tweet')
+
         id_str = tweet["id_str"]
         # save the image
         images = self.extract_media_list(tweet, include_video, include_photo)
@@ -203,10 +210,6 @@ class Downloader:
             tweet: A dict object representing a tweet.
         """
         extended = tweet.get("extended_entities")
-        if not extended and ("quoted_status" in tweet):
-            extended = tweet['quoted_status'].get("extended_entities")
-            self.log.debug('Extract media from quoted')
-
         if not extended:
             return []
         
