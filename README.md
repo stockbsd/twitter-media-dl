@@ -14,7 +14,7 @@ usage: twitter-dl [-h] [-c CONFIDENTIAL]
                                   [--thread-number THREAD_NUMBER]
                                   [--coro-number CORO_NUMBER]
                                   [--since SID]
-                                  [--tweet] [--list]
+                                  [--tweet] [--list] [--file]
                                   resource_id dest
 
 Download all images and/or videos uploaded by a twitter user you specify
@@ -32,6 +32,7 @@ optional arguments:
                         specify the size of images
   --tweet               indicate resource_id is a numbered tweet id
   --list                indicate resource_id is a list (user:slug) 
+  --file                indicate resource_id is a username file(each in a line)
   --video               include video
   --nophoto             exclude photo
   -l LIMIT, --limit LIMIT

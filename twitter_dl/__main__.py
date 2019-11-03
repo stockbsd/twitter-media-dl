@@ -102,11 +102,13 @@ def main():
     elif args.file:
         with open(args.resource_id) as f:
             for line in f:
-                try:
-                    downloader.download_media_of_user(line.strip(), args.dest, args.size, 
-                        args.limit, args.rts, args.video, args.photo, args.since)
-                except Exception as e:
-                    pass
+                id = line.strip()
+                if id and not id.startswith('#'):
+                    try:
+                        downloader.download_media_of_user(id, args.dest, args.size, 
+                            args.limit, args.rts, args.video, args.photo, args.since)
+                    except Exception as e:
+                        pass
             downloader.d.join()
     else:
         downloader.download_media_of_user(args.resource_id, args.dest, args.size, 

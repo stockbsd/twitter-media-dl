@@ -76,6 +76,7 @@ class Downloader:
         save_dest = ensure_dir(save_dest)
 
         alltweets = self.get_user_tweets(user, None, limit, rts, since_id)
+        self.log.info(f"{user} Got {len(alltweets)} tweets")
         for tweet in alltweets:
             self.process_tweet(tweet, save_dest, include_video=include_video, include_photo=include_photo)
 
@@ -94,6 +95,7 @@ class Downloader:
         save_dest = ensure_dir(save_dest)
 
         alltweets = self.get_list_tweets(user, listname, None, limit, rts, since_id)
+        self.log.info(f"{user}:{listname} Got {len(alltweets)} tweets")
         for tweet in alltweets:
             self.process_tweet(tweet, save_dest, include_video=include_video, include_photo=include_photo)
 
@@ -133,7 +135,7 @@ class Downloader:
             if len(tweets) < 200: # No more tweets left:200 is the twitter-api limit
                 break
         
-        self.log.info(f"Got {len(alltweets)} tweets")
+        #self.log.info(f"Got {len(alltweets)} tweets")
         return alltweets
 
     def get_user_tweets(self, user, start=None, count=200, rts=False, since_id=0):
