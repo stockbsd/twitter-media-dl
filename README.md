@@ -20,14 +20,14 @@ usage: twitter-dl [-h] [-c CONFIDENTIAL]
 Download all images and/or videos uploaded by a twitter user you specify
 
 positional arguments:
-  resource_id           An ID of a twitter user. Also accept tweet url or
+  resource_id           An ID of a twitter user. Also accept user id files, list or
                         tweet id.
-  dest                  Specify where to put images
+  dest                  Specify where to put images/videos
 
 optional arguments:
   -h, --help            show this help message and exit
   -c CONFIDENTIAL, --confidential CONFIDENTIAL
-                        a json file containing a key and a secret
+                        a json file containing (a key and a secret) or bearer_token
   -s {large,medium,small,thumb,orig}, --size {large,medium,small,thumb,orig}
                         specify the size of images
   --tweet               indicate resource_id is a numbered tweet id
@@ -41,4 +41,12 @@ optional arguments:
   --thread-number       THREAD_NUMBER
   --coro-number         CORO_NUMBER
   --since               SID
+```
+
+```
+Examples:
+    twitter-dl --tweet 1191067520033337345 pv
+    twitter-dl --rts -l 10 --video ladygaga pv
+    twitter-dl --rts -l 10 --video --nophoto --list YouTube:hey-fam pv
+    twitter-dl --rts -l 10 --video --file idfiles.txt pv
 ```
