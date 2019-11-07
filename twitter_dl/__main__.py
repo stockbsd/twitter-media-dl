@@ -5,12 +5,7 @@ import logging
 
 from . import Downloader
 
-
 def main():
-    DEBUG = os.getenv("DEBUG")
-    logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO,
-        format='%(levelname)-7s %(name)11s: %(message)s')
-
     parser = argparse.ArgumentParser(
         description="Download all images uploaded by a twitter user you specify"
     )
@@ -74,7 +69,13 @@ def main():
     )
     parser.add_argument("--thread-number", type=int, default=2)
     parser.add_argument("--coro-number", type=int, default=5)
+    parser.add_argument('-v', '--verbose', action='count', default=0)
     args = parser.parse_args()
+
+    level = logging.DEBUG if args.verbose>1 else (
+            logging.INFO if args.verbose==1 else logging.WARN)
+    logging.basicConfig(level=level,
+        format='%(levelname)-7s %(name)11s: %(message)s')
 
     if args.confidential:
         with open(args.confidential) as f:
