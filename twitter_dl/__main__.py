@@ -70,6 +70,9 @@ def main():
     parser.add_argument("--thread-number", type=int, default=2)
     parser.add_argument("--coro-number", type=int, default=5)
     parser.add_argument('-v', '--verbose', action='count', default=0)
+    parser.add_argument(
+        "--subdir", help="add subdir for each user", default=False, action="store_true"
+    )    
     args = parser.parse_args()
 
     level = logging.DEBUG if args.verbose>1 else (
@@ -106,7 +109,8 @@ def main():
                 id = line.strip()
                 if id and not id.startswith('#'):
                     try:
-                        downloader.download_media_of_user(id, args.dest, args.size, 
+                        dest = os.path.join(args.dest, id) if args.subdir else args.dest
+                        downloader.download_media_of_user(id, dest, args.size, 
                             args.limit, args.rts, args.video, args.photo, args.since)
                     except Exception as e:
                         pass

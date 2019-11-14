@@ -41,6 +41,7 @@ optional arguments:
   --thread-number       THREAD_NUMBER
   --coro-number         CORO_NUMBER
   --since               SID
+  --subdir              used with --file to save media to different dirs for each user
 ```
 
 ```
