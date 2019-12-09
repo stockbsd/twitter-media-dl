@@ -78,7 +78,7 @@ def main():
     level = logging.DEBUG if args.verbose>1 else (
             logging.INFO if args.verbose==1 else logging.WARN)
     logging.basicConfig(level=level,
-        format='%(levelname)-7s %(name)11s: %(message)s')
+        format='%(levelname)-7s %(name)s: %(message)s')
 
     if args.confidential:
         with open(args.confidential) as f:

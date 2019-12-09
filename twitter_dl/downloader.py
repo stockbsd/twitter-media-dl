@@ -120,7 +120,7 @@ class Downloader:
             if r.status_code == 200:
                 tweets = r.json()
             else:
-                self.log.error(f"An error occurred with the request, status code was {r.status_code}")
+                self.log.error(f"{url} error, code: {r.status_code}")
             
             if not tweets:
                 break
@@ -186,7 +186,7 @@ class Downloader:
             self.log.info(f"Got tweet with id {id} of user @{tweet['user']['name']}")
             return tweet
         else:
-            self.log.error(f"An error occurred , status code was {r.status_code}")
+            self.log.error(f"{url} error, code was {r.status_code}")
             return None
 
     def process_tweet(self, tweet, save_dest, size="large", include_video=False, include_photo=True):
