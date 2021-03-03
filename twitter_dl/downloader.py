@@ -214,9 +214,7 @@ class Downloader:
         Args:
             tweet: A dict object representing a tweet.
         """
-        extended = tweet.get("entities")
-        if "media" not in extended:
-            extended = tweet.get("extended_entities")
+        extended = tweet.get("extended_entities")
         if not extended:
             return []
 
