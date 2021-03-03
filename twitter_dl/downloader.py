@@ -55,12 +55,12 @@ class Downloader:
             raise RuntimeError("Bearer TokenNot Fetched")
 
     def download_media_of_tweet(self, tid, save_dest, size="large", include_video=False, 
-            include_photo=True, is_extended=False):
+            include_photo=True, is_extended=False, goto_quoted=False):
         ''' '''    
         save_dest = ensure_dir(save_dest)
 
         tweet = self.get_tweet(tid, is_extended)
-        self.process_tweet(tweet, save_dest, size, include_video, include_photo)
+        self.process_tweet(tweet, save_dest, size, include_video, include_photo, goto_quoted)
 
     def download_media_of_user(self, user, save_dest, size="large", limit=3200, rts=False, 
         include_video=False, include_photo=True, since_id=0):
@@ -192,11 +192,11 @@ class Downloader:
             self.log.error(f"{url} error, code was {r.status_code}")
             return None
 
-    def process_tweet(self, tweet, save_dest, size="large", include_video=False, include_photo=True):
+    def process_tweet(self, tweet, save_dest, size="large", include_video=False, include_photo=True, goto_quoted=False):
         if 'retweeted_status' in tweet:
             tweet = tweet['retweeted_status']
             self.log.debug('this is a retweet, turn to orignal tweet')
-        elif ("quoted_status" in tweet):
+        elif ("quoted_status" in tweet) and goto_quoted:
             tweet = tweet['quoted_status']
             self.log.debug('this is a quoted tweet, turn to orignal tweet')
 
@@ -214,10 +214,12 @@ class Downloader:
         Args:
             tweet: A dict object representing a tweet.
         """
-        extended = tweet.get("extended_entities")
+        extended = tweet.get("entities")
+        if "media" not in extended:
+            extended = tweet.get("extended_entities")
         if not extended:
             return []
-        
+
         rv = []
         if "media" in extended:
             for x in extended["media"]:
