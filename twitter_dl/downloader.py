@@ -55,12 +55,12 @@ class Downloader:
             raise RuntimeError("Bearer TokenNot Fetched")
 
     def download_media_of_tweet(self, tid, save_dest, size="large", include_video=False, 
-            include_photo=True):
+            include_photo=True, is_extended=False, goto_quoted=False):
         ''' '''    
         save_dest = ensure_dir(save_dest)
 
-        tweet = self.get_tweet(tid)
-        self.process_tweet(tweet, save_dest, size, include_video, include_photo)
+        tweet = self.get_tweet(tid, is_extended)
+        self.process_tweet(tweet, save_dest, size, include_video, include_photo, goto_quoted)
 
     def download_media_of_user(self, user, save_dest, size="large", limit=3200, rts=False, 
         include_video=False, include_photo=True, since_id=0):
@@ -165,35 +165,38 @@ class Downloader:
         
         return self.api_fetch_tweets(apiurl, payload, start, count, rts, since_id)
 
-    def get_tweet(self, id):
+    def get_tweet(self, tid, is_extended=False):
         """Download single tweet
 
         Args:
-            id: Tweet ID.
+            tid: Tweet ID.
+            is_extended: extended tweet mode
         """
 
         bearer_token = self.bearer_token
         url = "https://api.twitter.com/1.1/statuses/show.json"
         headers = {"Authorization": f"Bearer {bearer_token}"}
-        payload = {"id": id, "include_entities": "true"}
-
+        payload = {"id": tid, "include_entities": "true"}
+        if is_extended:
+            self.log.info("Extended mode")
+            payload["tweet_mode"] = "extended"
         # get the request
         r = requests.get(url, headers=headers, params=payload)
 
         # check the response
         if r.status_code == 200:
             tweet = r.json()
-            self.log.info(f"Got tweet with id {id} of user @{tweet['user']['name']}")
+            self.log.info(f"Got tweet with id {tid} of user @{tweet['user']['name']}")
             return tweet
         else:
             self.log.error(f"{url} error, code was {r.status_code}")
             return None
 
-    def process_tweet(self, tweet, save_dest, size="large", include_video=False, include_photo=True):
+    def process_tweet(self, tweet, save_dest, size="large", include_video=False, include_photo=True, goto_quoted=False):
         if 'retweeted_status' in tweet:
             tweet = tweet['retweeted_status']
             self.log.debug('this is a retweet, turn to orignal tweet')
-        elif ("quoted_status" in tweet):
+        elif ("quoted_status" in tweet) and goto_quoted:
             tweet = tweet['quoted_status']
             self.log.debug('this is a quoted tweet, turn to orignal tweet')
 
@@ -214,7 +217,7 @@ class Downloader:
         extended = tweet.get("extended_entities")
         if not extended:
             return []
-        
+
         rv = []
         if "media" in extended:
             for x in extended["media"]:
